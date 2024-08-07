@@ -1,0 +1,149 @@
+{
+  "tasks": [
+    {
+      "type": "cppbuild",
+      "label": "C/C++: g++-11 生成活动文件",
+      "command": "/usr/bin/g++-11",
+      "args": [
+        "-fdiagnostics-color=always",
+        "-g",
+        "${file}",
+        "-o",
+        "${fileDirname}/${fileBasenameNoExtension}"
+      ],
+      "options": {
+        "cwd": "${fileDirname}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": "build",
+      "detail": "调试器生成的任务。"
+    },
+    {
+      "label": "colcon build",
+      "detail": "使用colcon构建项目",
+      "type": "shell",
+      "command": "colcon",
+      "args": [
+        "build",
+        "${input:choosePrjName}"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      }
+    },
+    {
+      "label": "colcon build with current file project",
+      "detail": "使用colcon构建当前文件所在的项目",
+      "type": "shell",
+      "command": "colcon",
+      "args": [
+        "build",
+        "--packages-select",
+        "${input:currentFilePrjName}"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "focus": true,
+        "reveal": "silent",
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      }
+    },
+    {
+      "type": "shell",
+      "label": "ros2_run",
+      "detail": "运行当前文件",
+      "command": ". install/local_setup.bash && ros2 run ${input:currentFilePrjName} ${input:execName}",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "prjName",
+      "type": "command",
+      "command": "extension.commandvariable.file.openDialog",
+      "args":{
+        "canSelect":"folders",
+        "defaultUri":"${workspaceFolder}/src",
+        "title":"选择一个项目",
+        "transform":{
+          "find":".*${pathSeparator}",
+          "replace":""
+        }
+      }
+    },
+    {
+      "id": "currentFilePrjName",
+      "type": "command",
+      "command": "extension.commandvariable.transform",
+      "args":{
+        "text":"${file}",
+        "find":"${workspaceFolder}/src/(.*?)/.*",
+        "replace":"$1"
+      }
+    },
+    {
+      "id": "choosePrjName",
+      "type": "command",
+      "command": "extension.commandvariable.pickStringRemember",
+      "args":{
+        "default":"${remember:pickPrjName}",
+        "options":[
+          ["上次选择的项目","${remember:pickPrjName}"],
+          ["当前文件所在项目","--packages-select=${transform:currentPrjName}"],
+          ["所有项目",""],
+          ["选择一个项目","--packages-select=${openDialog:dir}"]
+        ],
+        "transform":{
+          "currentPrjName":{
+            "text":"${file}",
+            "find":"${workspaceFolder}/src/(.*?)/.*",
+            "replace":"$1"
+          }
+        },
+        "openDialog":{
+          "dir":{
+            "canSelect":"folders",
+            "defaultUri":"${workspaceFolder}/src",
+            "title":"选择一个项目",
+            "transform":{
+              "find":".*${pathSeparator}",
+              "replace":"",
+              "key":"pickPrjName",
+            },
+          }
+        }
+      }
+    },
+    {
+      "id": "execName",
+      "type": "promptString",
+      "description": "Cmake中指定的可执行名称"
+    }
+  ],
+  "version": "2.0.0"
+}
