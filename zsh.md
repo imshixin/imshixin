@@ -1,13 +1,13 @@
 
+# 设置代理
+如果网络不好，建议设置代理，**代理地址改为自己的地址**
+```sh
+export http_proxy="http://192.168.120.1:10809"
+export https_proxy="http://192.168.120.1:10809"
+```
 # zsh安装
 `sudo apt install zsh`
 
-# 设置代理
-ip替换为自己的ip
-```sh
-export http_proxy=http://192.168.1.1:10809
-export https_proxy=http://192.168.1.1:10809
-```
 # ohmyzsh安装
 
 ```sh
@@ -29,15 +29,18 @@ git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-m
 git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
 ```
 
-# 安装power10k主题
+
+# zsh配置文件修改
+
+## 安装power10k主题（可选）
+
 
 ```
 git clone --depth=1 https://gitee.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 ```
 
-# zsh配置文件修改
-
 ```sh
+# 前面没安装power10k的话这里就不要改
 ZSH_THEME="powerlevel10k/powerlevel10k"
 #......
 plugins=(git sudo z zsh-completions zsh-autosuggestions zsh-syntax-highlighting extract)
@@ -46,11 +49,44 @@ plugins=(git sudo z zsh-completions zsh-autosuggestions zsh-syntax-highlighting 
 fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
 ```
 
+# 终端字体安装
+## 下载
+1. 推荐（等宽字体）：Jetbrains Mono Nerd Font
+[预览](https://www.programmingfonts.org/#jetbrainsmono)
+[下载](https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/JetBrainsMono.zip)
+2. MesloLG Nerd Font
+[预览](https://www.programmingfonts.org/#meslo)
+[下载](https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/Meslo.zip)
+
+## 字体安装
+
+Windows下解压所有TIFF字体文件后全选右键安装即可
+#TODO Linux下字体安装方法（网上自己搜）
+
+## Vscode集成终端配置
+在设置中搜索`终端 字体`，第一个选项就是终端的字体设置，输入`JetBrainsMono Nerd Font, MesloLGM Nerd Font, monospace`
+> 逗号分割多个字体，会从第一个往后依次检索系统已安装的字体使用
+
+或者直接在`settings.json`中添加
+```json
+"terminal.integrated.fontFamily": "JetBrainsMono Nerd Font, MesloLGM Nerd Font, monospace"
+
+```
+![Vscode集成终端配置](http://img.xinit.xyz/markdownPixPin_2025-06-16_11-00-02.png?image)
+
+## Windows Terminal（终端）配置
+在 设置 > 默认值 > 外观 下有字体设置
+
+![Windows Terminal（终端）配置](http://img.xinit.xyz/markdownPixPin_2025-06-16_10-58-13.png)
+
+输入`JetBrainsMono Nerd Font`或点击输入框后会显示系统所有已安装字体，选择JetBrainsMono Nerd Font即可
+
 # ros 环境配置
 > 添加到`.zshrc`最前面
-复制后面的
-```zsh
-resetup(){
+
+zsh的代码：
+```bash
+rosup(){
         #pushd install > /dev/null
         source /opt/ros/humble/setup.zsh
         if [ $? ]
@@ -62,7 +98,7 @@ resetup(){
         printf "%-40s %-5s\n" "sourcing /opt/ros/humble/setup.zsh" "$result"
         #popd > /dev/null
         #source local_setup
-        if [ -e "install/local_setup.bash" ]
+        if [ -e "install/local_setup.zsh" ]
         then
                 pushd install > /dev/null
                 source local_setup.zsh
@@ -79,24 +115,24 @@ resetup(){
                 echo "no install/local_setup.zsh found"
         fi
 }
-#auto source ros2 if avaliable in shell start
-if [ -e "install/local_setup.bash" ]
-then
-        read -k 1 "s?source local_setup.bash(default y / n)? "
-        echo "\r"
-        if [ -n $s ]
-        then
-                if [ $s == 'y' -o $s == 'Y' ]
-                then
-                        resetup
-                fi
-        fi
-fi
+# 自动source ros环境，不建议使用
+# if [ -e "install/local_setup.zsh" ]
+# then
+#         read -k 1 "s?source local_setup.zsh( y /default n)? "
+#         echo "\r"
+#         if [ -n $s ]
+#         then
+#                 if [ $s == 'y' -o $s == 'Y' ]
+#                 then
+#                         rosup
+#                 fi
+#         fi
+# fi
 ```
 
-bash的:
+bash的代码:
 ```bash
-resetup(){
+rosup(){
         #pushd install > /dev/null
         source /opt/ros/humble/setup.bash
         if [ $? ]
@@ -125,70 +161,36 @@ resetup(){
                 echo "no install/local_setup.bash found"
         fi
 }
-#auto source ros2 if avaliable in shell start
-if [ -e "install/local_setup.bash" ]
-then
-        read -k 1 "s?source local_setup.bash(y / n default)? "
-        echo "\r"
-        if [ -n $s ]
-        then
-                if [ $s == 'y' -o $s == 'Y' ]
-                then
-                        resetup
-                fi
-        fi
-fi
+# 自动source ros环境，不建议使用
+# if [ -e "install/local_setup.bash" ]
+# then
+#         read -n 1 -p "source local_setup.bash( y /default n)? " s
+#         echo "\r"
+#         if [ -n $s ]
+#         then
+#                 if [ $s == 'y' -o $s == 'Y' ]
+#                 then
+#                         rosup
+#                 fi
+#         fi
+# fi
 ```
 
-移除缩进和注释（会自动添加缩进）：
-```sh
-resetup(){
-source /opt/ros/humble/setup.zsh
-if [ $? ]
-then
-result="[OK]"
-else
-result="[Failed]"
-fi
-printf "%-40s %-5s\n" "sourcing /opt/ros/humble/setup.zsh" "$result"
-if [ -e "install/local_setup.bash" ]
-then
-pushd install > /dev/null
-source local_setup.zsh
-if [ $? ]
-then
-result="[OK]"
-else
-result="[Failed]"
-fi
-printf "%-40s %-5s\n" "sourcing local_setup.zsh" "$result"
-popd > /dev/null
-else
-echo "no install/local_setup.zsh found"
-fi
-}
-if [ -e "install/local_setup.bash" ]
-then
-read -k 1 "s?source local_setup.bash(default y / n)? "
-echo "\r"
-if [ -n $s ]
-then
-if [ $s == 'y' -o $s == 'Y' ]
-then
-resetup
-fi
-fi
-fi
-```
-MVS和其他配置，放在最下面：
+# other
+
+这些不用设置
+
+MVS环境配置，放在最下面：
 ```zsh
-alias temp1="sudo cat /sys/class/thermal/thermal_zone1/temp"
-alias temp0="sudo cat /sys/class/thermal/thermal_zone0/temp"
+alias temp1=sudo cat /sys/class/thermal/thermal_zone1/temp
+alias temp0=sudo cat /sys/class/thermal/thermal_zone0/temp
 alias vnc=tigervncserver -localhost no
-#MVCAM_SDK export
 export MVCAM_SDK_PATH=/opt/MVS
+
 export MVCAM_COMMON_RUNENV=/opt/MVS/lib
+
 export MVCAM_GENICAM_CLPROTOCOL=/opt/MVS/lib/CLProtocol
+
 export ALLUSERSPROFILE=/opt/MVS/MVFG
 export LD_LIBRARY_PATH=/opt/MVS/lib/aarch64:$LD_LIBRARY_PATH
 ```
